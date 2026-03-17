@@ -1,0 +1,37 @@
+{
+    "fileName": "REVLib.json",
+    "name": "REVLib",
+    "version": "2025.0.2",
+    "frcYear": "2025",
+    "uuid": "3f48b8c3-9b21-4d92-a64b-1741daa0a8c4",
+    "mavenUrls": [
+        "https://software-metadata.revrobotics.com/maven/release/"
+    ],
+    "jsonUrl": "https://software-metadata.revrobotics.com/REVLib-2025.json",
+    "javaDependencies": [
+        {
+            "groupId": "com.revrobotics.frc",
+            "artifactId": "REVLib-java",
+            "version": "2025.0.2"
+        }
+    ],
+    "jniDependencies": [
+        {
+            "groupId": "com.revrobotics.frc",
+            "artifactId": "REVLib-driver",
+            "version": "2025.0.2",
+            "isJar": false,
+            "skipInvalidPlatforms": true,
+            "validPlatforms": [
+                "windowsx86-64",
+                "windowsx86",
+                "linuxathena",
+                "linuxx86-64",
+                "linuxaarch64bionic",
+                "osxuniversal"
+            ],
+            "simMode": "hwsim"
+        }
+    ],
+    "cppDependencies": []
+}

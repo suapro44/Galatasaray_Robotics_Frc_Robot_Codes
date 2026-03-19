@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -13,61 +16,106 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 /**
- * Yerden alma (Intake) alt sistemi — Leader/Follower (lider/takipçi) konfigürasyonunda
- * iki adet NEO motoru (SparkMax) kullanır. Takipçi, liderin çıkışını otomatik olarak taklit eder.
+ * Yerden alma (Intake) alt sistemi — Roller ve mafsal (Pivot/Açma-Kapatma) motorlarını içerir.
+ * Roller oyun parçasını emerken, Pivot motoru (PID ve redüktör ayarlı) intake'i indirir/kaldırır.
  */
 public class IntakeSubsystem extends SubsystemBase {
 
-    private final SparkMax leaderMotor;
-    private final SparkMax followerMotor;
+    // ── Motorlar ──
+    private final SparkMax rollerMotor;
+    private final SparkMax pivotMotor;
+
+    // ── Pivot Kontrolü ──
+    private final RelativeEncoder pivotEncoder;
+    private final SparkClosedLoopController pivotPID;
+
+    private double pivotTargetPosition = IntakeConstants.PIVOT_STOWED_POSITION;
 
     public IntakeSubsystem() {
-        leaderMotor = new SparkMax(IntakeConstants.LEADER_ID, MotorType.kBrushless);
-        followerMotor = new SparkMax(IntakeConstants.FOLLOWER_ID, MotorType.kBrushless);
+        rollerMotor = new SparkMax(IntakeConstants.ROLLER_MOTOR_ID, MotorType.kBrushless);
+        pivotMotor  = new SparkMax(IntakeConstants.PIVOT_MOTOR_ID,  MotorType.kBrushless);
 
-        // Lider (Leader) motor konfigürasyonu
-        SparkMaxConfig leaderConfig = new SparkMaxConfig();
-        leaderConfig
-            .smartCurrentLimit(IntakeConstants.CURRENT_LIMIT)
+        // ────── Roller (Döndürme) Konfigürasyonu ──────
+        SparkMaxConfig rollerConfig = new SparkMaxConfig();
+        rollerConfig
+            .smartCurrentLimit(IntakeConstants.ROLLER_CURRENT_LIMIT)
             .idleMode(IdleMode.kBrake);
-        leaderMotor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rollerMotor.configure(rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Takipçi (Follower) motor konfigürasyonu — Lideri takip eder
-        SparkMaxConfig followerConfig = new SparkMaxConfig();
-        followerConfig
-            .smartCurrentLimit(IntakeConstants.CURRENT_LIMIT)
-            .idleMode(IdleMode.kBrake)
-            .follow(leaderMotor, false);
-        followerMotor.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // ────── Pivot (Açma/Kapatma) Konfigürasyonu ve PID ──────
+        SparkMaxConfig pivotConfig = new SparkMaxConfig();
+        pivotConfig
+            .smartCurrentLimit(IntakeConstants.PIVOT_CURRENT_LIMIT)
+            .idleMode(IdleMode.kBrake);
+            
+        // Redüktör Oranını (Gearbox Ratio) enkoder faktörü olarak ata
+        pivotConfig.encoder
+            .positionConversionFactor(1.0 / IntakeConstants.PIVOT_GEAR_RATIO)
+            .velocityConversionFactor(1.0 / IntakeConstants.PIVOT_GEAR_RATIO);
+
+        pivotConfig.closedLoop
+            .p(IntakeConstants.PIVOT_KP)
+            .i(IntakeConstants.PIVOT_KI)
+            .d(IntakeConstants.PIVOT_KD);
+            
+        pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        // Enkoder işlemleri
+        pivotEncoder = pivotMotor.getEncoder();
+        pivotEncoder.setPosition(0.0); // Robot açılışında kapalı (0) olduğunu varsay
+
+        pivotPID = pivotMotor.getClosedLoopController();
     }
 
-    // ────────────── GENEL FONKSİYONLAR (PUBLIC API) ──────────────
+    // ────────────── ROLLER (DÖNDÜRME) API ──────────────
 
-    /** Intake motorlarını ayarlanan hızda içeri doğru çalıştırır. */
+    /** Intake roller motorunu ayarlanan hızda içeri doğru çalıştırır. */
     public void runIntake() {
-        leaderMotor.set(IntakeConstants.INTAKE_SPEED);
+        rollerMotor.set(IntakeConstants.INTAKE_SPEED);
     }
 
-    /** Intake motorlarını ters yönde (kusma/eject) çalıştırır. */
+    /** Intake motorunu ters yönde (kusma/eject) çalıştırır. */
     public void reverseIntake() {
-        leaderMotor.set(-IntakeConstants.INTAKE_SPEED);
+        rollerMotor.set(-IntakeConstants.INTAKE_SPEED);
     }
 
-    /** Intake motorlarını durdurur. */
+    /** Intake roller motorunu durdurur. */
     public void stop() {
-        leaderMotor.set(0.0);
+        rollerMotor.set(0.0);
     }
 
-    /** @return Intake motorlarının şu an çalışıp çalışmadığı. */
+    /** @return Intake roller motorunun şu an çalışıp çalışmadığı. */
     public boolean isRunning() {
-        return Math.abs(leaderMotor.get()) > 0.05;
+        return Math.abs(rollerMotor.get()) > 0.05;
+    }
+
+    // ────────────── PIVOT (AÇMA/KAPATMA) API ──────────────
+
+    /** Intake'i yere/almaya hazır hale getirir (İndirir). */
+    public void deploy() {
+        this.pivotTargetPosition = IntakeConstants.PIVOT_DEPLOYED_POSITION;
+        pivotPID.setReference(IntakeConstants.PIVOT_DEPLOYED_POSITION, ControlType.kPosition);
+    }
+
+    // Intake'i koruma pozisyonuna geri çeker (Kaldırır). 
+    public void retract() {
+        this.pivotTargetPosition = IntakeConstants.PIVOT_STOWED_POSITION;
+        pivotPID.setReference(IntakeConstants.PIVOT_STOWED_POSITION, ControlType.kPosition);
+    }
+
+    // Intake'i belli bir hedefe ayarlar (Eğer özelleşmiş bir derece istenirse)
+    public void setPivotPosition(double position) {
+        this.pivotTargetPosition = position;
+        pivotPID.setReference(position, ControlType.kPosition);
     }
 
     // ────────────── PERİYODİK (PERIODIC) ──────────────
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Intake/LeaderOutput", leaderMotor.get());
-        SmartDashboard.putNumber("Intake/LeaderCurrent", leaderMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Intake/RollerOutput", rollerMotor.get());
+        SmartDashboard.putNumber("Intake/PivotPosition", pivotEncoder.getPosition());
+        SmartDashboard.putNumber("Intake/PivotTarget", pivotTargetPosition);
+        SmartDashboard.putNumber("Intake/PivotCurrent", pivotMotor.getOutputCurrent());
     }
 }

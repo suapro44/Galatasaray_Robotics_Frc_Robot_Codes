@@ -93,15 +93,38 @@ public final class Constants {
     //  INTAKE (Yerden Alma - 2× NEO)
     // ──────────────────────────────────
     public static final class IntakeConstants {
-        // TODO: Intake motor CAN ID'lerini girin
-        public static final int LEADER_ID   = 13;
-        public static final int FOLLOWER_ID = 14;
+        // TODO: Intake roller (Pulley) ve açma/kapatma (Pivot - Chain) motorlarının CAN ID'lerini girin
+        public static final int ROLLER_MOTOR_ID = 13;
+        public static final int PIVOT_MOTOR_ID  = 14;
 
-        // TODO: İdeal intake dönüş hızını test ederek ayarlayın
+        // ────── ROLLER (Döndürme - Pulley Side) ──────
+        // CAD Notu: Roller motorunun ucunda "4:1 MAX Planetary + 90 Derece" modülü ve kayış (pulley) sistemi var.
+        // Salt yüzdelik güç (% output) çalıştığı için encoder oranına (gear ratio) kodda ihtiyaç yok.
+        // TODO: Bu redüktöre ve kayışa göre ideal lastik (compliant wheel) dönme gücünü (0-1) test edin.
         public static final double INTAKE_SPEED = 0.80; // Yüzdelik güç (0-1)
+        public static final int ROLLER_CURRENT_LIMIT = 40; // Amper
 
-        // TODO: Akım sınırını (Current Limit) testlere göre belirleyin
-        public static final int CURRENT_LIMIT = 40; // Amper
+        // ────── PIVOT (Açma/Kapatma - Chain Side) MEKANİZMASI ──────
+        // CAD Notu: "2x 4:1 (16:1) veya 9:1 MAX Planetary + 90 Derece" modülü + Zincir (Chain) dişli sistemi
+        // Zincirde tahminen "am-4773 (küçük) -> am-4779 (büyük)" dişli kullanılıyor.
+        
+        // TODO: Intake pivot redüktörünün tam oranını hesaplayıp buraya yazın.
+        // Örnek Formül = MAX_Planetary_Oranı * (Büyük_Dişli / Küçük_Dişli)
+        // Örnek (16:1 planetary ve 3:1 zincir = Toplam 48.0)
+        public static final double PIVOT_GEAR_RATIO = 48.0; 
+        
+        public static final int PIVOT_CURRENT_LIMIT = 30; // Amper
+
+        // TODO: Pivot (Intake kolu) için PID ayarlarını yapın. 
+        // Ağırlıktan dolayı (gravity) aşağı inerken hızlı düşmemesi için limit veya PID tuning gerekebilir.
+        public static final double PIVOT_KP = 0.1;
+        public static final double PIVOT_KI = 0.0;
+        public static final double PIVOT_KD = 0.01;
+        
+        // TODO: Açık (Deploy/Yerde) ve Kapalı (Stow/Yukarıda) pozisyonlarını redüktör çıkışı (Mekanizma tur sayısı) cinsinden ayarlayın.
+        // Örneğin: Kol 90 derece açılıyorsa (Tam 1 turun dörtte biri) PIVOT_DEPLOYED_POSITION = 0.25 olur.
+        public static final double PIVOT_DEPLOYED_POSITION = 0.25;
+        public static final double PIVOT_STOWED_POSITION = 0.0;
     }
 
     // ──────────────────────────────────
@@ -165,6 +188,9 @@ public final class Constants {
         // TODO: Climb motor CAN ID'sini girin
         public static final int MOTOR_ID = 21;
 
+        // TODO: Tırmanma mekanizmasındaki redüktör (gearbox) oranını (Örn: 25:1 ise 25) girin
+        public static final double GEAR_RATIO = 25.0;
+
         // PID Değerleri (Pozisyon kontrolü)
         // TODO: Tırmanma mekanizması PID ayarlarını yapın
         public static final double CLIMB_KP = 0.1;
@@ -173,12 +199,12 @@ public final class Constants {
         public static final double CLIMB_MIN_OUTPUT = -1.0;
         public static final double CLIMB_MAX_OUTPUT =  1.0;
 
-        // Hedef Pozisyonlar (Enkoder tur sayısı)
-        // TODO: Tırmanma mesafelerini test ederek bulup güncelleyin
-        public static final double LEVEL_3_SETPOINT = 150.0;
+        // Hedef Pozisyonlar (Redüktör çıkışı tur sayısı)
+        // TODO: Tırmanma şaftının kaç tur dönmesi gerektiğini test ederek bulup güncelleyin
+        public static final double LEVEL_3_SETPOINT = 10.0; // Örnek hedef
         public static final double STOW_SETPOINT    = 0.0;
 
-        public static final double POSITION_TOLERANCE = 1.0; // Tur
+        public static final double POSITION_TOLERANCE = 0.1; // Tur
 
         public static final int CURRENT_LIMIT = 60; // Amper
     }
@@ -190,6 +216,22 @@ public final class Constants {
         // TODO: Limelight arayüzünden kameralara verdiğiniz isimleri buraya yazın
         public static final String MAIN_LIMELIGHT  = "limelight-main";
         public static final String CLIMB_LIMELIGHT = "limelight-climb";
+
+        // TODO: Limelight otomatik hizalama (Auto-aim) PID katsayılarını yapın
+        // tx değerine göre şasiyi döndürmek için kullanılan PID değerleri
+        public static final double AIM_KP = 0.05;
+        public static final double AIM_KI = 0.0;
+        public static final double AIM_KD = 0.005;
+
+        // Tırmanma (Climb) AprilTag hizalaması için PID değerleri
+        // TODO: Bu PID değerlerini robot sahaya inince test ederek düzeltin
+        public static final double CLIMB_ALIGN_KP = 0.05;
+        public static final double CLIMB_ALIGN_KD = 0.002;
+        public static final double CLIMB_DISTANCE_KP = 0.1;
+        public static final double CLIMB_DISTANCE_KD = 0.0;
+        
+        // TODO: Robotun tam tırmanma barının altına/önüne geldiğindeki ideal 'ty' değerini buradan ayarlayın
+        public static final double TARGET_TY_FOR_CLIMB = 0.0; 
     }
 
     // ──────────────────────────────────

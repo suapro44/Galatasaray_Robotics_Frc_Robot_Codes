@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.commands.AutoAimCommand;
+import frc.robot.commands.AutoClimbAlignCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ChamberSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -27,11 +29,13 @@ import frc.robot.subsystems.VisionSubsystem;
  *   <tr><td>Sağ Tampon (RB)</td><td>Yerden alma - Intake (Basılı tut)</td></tr>
  *   <tr><td>Sol Tampon (LB)</td><td>Ara bölme - Chamber ileri (Basılı tut)</td></tr>
  *   <tr><td>Sağ Tetik (RT)</td><td>Ateş etme sekansı (Motorları hızlandır + parçayı ilet)</td></tr>
- *   <tr><td>Sol Tetik (LT)</td><td>Açı ayarı (Subwoofer / Yakın atış)</td></tr>
+ *   <tr><td>Sol Tetik (LT)</td><td>Limelight ile Otomatik Hedef Alma (Auto-Aim)</td></tr>
  *   <tr><td>A Tuşu</td><td>Açı ayarı (Toplanmış pozisyon - Stow)</td></tr>
  *   <tr><td>B Tuşu</td><td>Intake ters (Kusma - Eject)</td></tr>
  *   <tr><td>X Tuşu</td><td>Açı ayarı (Podium / Uzak atış)</td></tr>
  *   <tr><td>Y Tuşu</td><td>Seviye 3'e tırman</td></tr>
+ *   <tr><td>D-Pad Yukarı</td><td>Açı ayarı (Subwoofer / Yakın atış)</td></tr>
+ *   <tr><td>D-Pad Aşağı</td><td>Tırmanma AprilTag Hizalaması (Auto Climb Align)</td></tr>
  * </table>
  */
 public class RobotContainer {
@@ -80,16 +84,28 @@ public class RobotContainer {
         // ── Sağ Tampon (RB): Intake (Basılı tutulduğunda çalışır, bırakıldığında durur) ──
         driverController.rightBumper()
             .whileTrue(Commands.startEnd(
-                intake::runIntake,
-                intake::stop,
+                () -> {
+                    intake.deploy();
+                    intake.runIntake();
+                },
+                () -> {
+                    intake.retract();
+                    intake.stop();
+                },
                 intake
             ));
 
         // ── B Tuşu: Ters Intake / Kusma (Basılı tutulduğunda çalışır) ──
         driverController.b()
             .whileTrue(Commands.startEnd(
-                intake::reverseIntake,
-                intake::stop,
+                () -> {
+                    intake.deploy();
+                    intake.reverseIntake();
+                },
+                () -> {
+                    intake.retract();
+                    intake.stop();
+                },
                 intake
             ));
 
@@ -127,11 +143,27 @@ public class RobotContainer {
                 )
             );
 
-        // ── Sol Tetik (LT > 0.5): Açı - Subwoofer (Yakın Atış) Preset'i ──
+        // ── Sol Tetik (LT > 0.5): Otomatik Hedef Alma (Auto-Aim) ──
+        // Şoför LT'ye basılı tutarken sürüşe (ileri/geri ve sağ/sol) devam edebilir.
+        // Limelight hedefi gördüğünde sağ/sol joystickten aldığı dönme(rotasyon) etkisini ezer.
         driverController.leftTrigger(0.5)
+            .whileTrue(new AutoAimCommand(
+                drivetrain,
+                vision,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
+                () -> -driverController.getRightX()
+            ));
+
+        // ── D-Pad Yukarı (POV 0): Açı - Subwoofer (Yakın Atış) Preset'i ──
+        driverController.pov(0)
             .onTrue(Commands.runOnce(
                 () -> shooter.setAngle(ShooterConstants.ANGLE_SUBWOOFER), shooter
             ));
+
+        // ── D-Pad Aşağı (POV 180): Otomatik Tırmanma Hizalaması (Climb Limelight ile) ──
+        driverController.pov(180)
+            .whileTrue(new AutoClimbAlignCommand(drivetrain, vision));
 
         // ── X Tuşu: Açı - Podium (Uzak Atış) Preset'i ──
         driverController.x()

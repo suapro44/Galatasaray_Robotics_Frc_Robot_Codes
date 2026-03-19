@@ -35,11 +35,18 @@ public class ClimbSubsystem extends SubsystemBase {
         config
             .smartCurrentLimit(ClimbConstants.CURRENT_LIMIT)
             .idleMode(IdleMode.kBrake);
+        // Kapalı çevrim parametreleri
         config.closedLoop
             .p(ClimbConstants.CLIMB_KP)
             .i(ClimbConstants.CLIMB_KI)
             .d(ClimbConstants.CLIMB_KD)
             .outputRange(ClimbConstants.CLIMB_MIN_OUTPUT, ClimbConstants.CLIMB_MAX_OUTPUT);
+            
+        // Redüktör Oranını (Gearbox Ratio) enkoder faktörü olarak ata
+        config.encoder
+            .positionConversionFactor(1.0 / ClimbConstants.GEAR_RATIO)
+            .velocityConversionFactor(1.0 / ClimbConstants.GEAR_RATIO);
+            
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         // Relatif enkoder — Başlangıç noktasını sıfır kabul eder (tamamen aşağıda/kapalı olduğunu varsayar)

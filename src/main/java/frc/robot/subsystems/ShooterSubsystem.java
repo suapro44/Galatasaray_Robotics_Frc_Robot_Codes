@@ -19,47 +19,47 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 /**
- * Shooter subsystem containing:
+ * Shooter (Atıcı/Fırlatıcı) alt sistemi şunları içerir:
  * <ul>
- *   <li>3× Vortex (SparkFlex) — flywheel wheels (1 leader + 2 followers)</li>
- *   <li>2× NEO 550 (SparkMax) — angle adjustment (1 leader + 1 follower)</li>
+ *   <li>3× Vortex (SparkFlex) — Fırlatıcı tekerlekleri (1 Lider + 2 Takipçi)</li>
+ *   <li>2× NEO 550 (SparkMax) — Açı ayarlama mekanizması (1 Lider + 1 Takipçi)</li>
  * </ul>
  *
- * The angle is controlled via the NEO 550 internal (relative) encoder
- * and SparkClosedLoopController in position mode.  The mechanism starts at its
- * lowest position (0) at match start.
+ * Açı mekanizması, NEO 550 dâhili (relatif) kodlayıcısı (encoder) ve 
+ * SparkClosedLoopController üzerinden pozisyon modunda kontrol edilir.
+ * Mekanizma maç başladığında en alt konumda (0 değeri) kabul edilir.
  */
 public class ShooterSubsystem extends SubsystemBase {
 
-    // ── Flywheel motors ──
+    // ── Fırlatıcı Tekerlek motorları ──
     private final SparkFlex wheelLeader;
     private final SparkFlex wheelFollower1;
     private final SparkFlex wheelFollower2;
 
-    // ── Angle motors ──
+    // ── Açı Kontrol Motorları ──
     private final SparkMax angleLeader;
     private final SparkMax angleFollower;
 
-    // ── Angle control ──
+    // ── Açı Kontrol Mekanizması ──
     private final RelativeEncoder angleEncoder;
     private final SparkClosedLoopController anglePID;
 
     private double angleSetpoint = ShooterConstants.ANGLE_STOW;
 
     public ShooterSubsystem() {
-        // ─────── Flywheel setup ───────
+        // ─────── Fırlatıcı Tekerlek (Flywheel) Kurulumu ───────
         wheelLeader    = new SparkFlex(ShooterConstants.WHEEL_LEADER_ID,    MotorType.kBrushless);
         wheelFollower1 = new SparkFlex(ShooterConstants.WHEEL_FOLLOWER1_ID, MotorType.kBrushless);
         wheelFollower2 = new SparkFlex(ShooterConstants.WHEEL_FOLLOWER2_ID, MotorType.kBrushless);
 
-        // Leader config
+        // Lider motor konfigürasyonu
         SparkFlexConfig wheelLeaderConfig = new SparkFlexConfig();
         wheelLeaderConfig
             .smartCurrentLimit(ShooterConstants.WHEEL_CURRENT_LIMIT)
-            .idleMode(IdleMode.kCoast);
+            .idleMode(IdleMode.kCoast); // Atış sonrası serbest dönmesi için Coast modu
         wheelLeader.configure(wheelLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Follower 1 config
+        // Takipçi 1 konfigürasyonu
         SparkFlexConfig follower1Config = new SparkFlexConfig();
         follower1Config
             .smartCurrentLimit(ShooterConstants.WHEEL_CURRENT_LIMIT)
@@ -67,7 +67,7 @@ public class ShooterSubsystem extends SubsystemBase {
             .follow(wheelLeader, false);
         wheelFollower1.configure(follower1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Follower 2 config
+        // Takipçi 2 konfigürasyonu
         SparkFlexConfig follower2Config = new SparkFlexConfig();
         follower2Config
             .smartCurrentLimit(ShooterConstants.WHEEL_CURRENT_LIMIT)
@@ -75,15 +75,15 @@ public class ShooterSubsystem extends SubsystemBase {
             .follow(wheelLeader, false);
         wheelFollower2.configure(follower2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // ─────── Angle setup ───────
+        // ─────── Açı Mekanizması (Angle) Kurulumu ───────
         angleLeader   = new SparkMax(ShooterConstants.ANGLE_LEADER_ID,   MotorType.kBrushless);
         angleFollower = new SparkMax(ShooterConstants.ANGLE_FOLLOWER_ID, MotorType.kBrushless);
 
-        // Angle leader config with PID
+        // PID destekli Lider Açı Motoru konfigürasyonu
         SparkMaxConfig angleLeaderConfig = new SparkMaxConfig();
         angleLeaderConfig
             .smartCurrentLimit(ShooterConstants.ANGLE_CURRENT_LIMIT)
-            .idleMode(IdleMode.kBrake);
+            .idleMode(IdleMode.kBrake); // Olduğu yerde kalması için Brake modu şart
         angleLeaderConfig.closedLoop
             .p(ShooterConstants.ANGLE_KP)
             .i(ShooterConstants.ANGLE_KI)
@@ -91,7 +91,7 @@ public class ShooterSubsystem extends SubsystemBase {
             .outputRange(ShooterConstants.ANGLE_MIN_OUTPUT, ShooterConstants.ANGLE_MAX_OUTPUT);
         angleLeader.configure(angleLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Angle follower config
+        // Takipçi Açı Motoru konfigürasyonu
         SparkMaxConfig angleFollowerConfig = new SparkMaxConfig();
         angleFollowerConfig
             .smartCurrentLimit(ShooterConstants.ANGLE_CURRENT_LIMIT)
@@ -99,70 +99,70 @@ public class ShooterSubsystem extends SubsystemBase {
             .follow(angleLeader, false);
         angleFollower.configure(angleFollowerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Relative encoder — zero position assumed at power-on (lowest position)
+        // Relatif (Dâhili) Enkoder — Robot başladığında pozisyon sıfır kabul edilir (en alt konum)
         angleEncoder = angleLeader.getEncoder();
-        angleEncoder.setPosition(0.0); // reset to zero at startup
+        angleEncoder.setPosition(0.0); // Başlangıçta sıfırla
 
-        // Closed-loop controller
+        // Kapalı Çevrim (PID) Kontrolcüsü
         anglePID = angleLeader.getClosedLoopController();
     }
 
-    // ────────────── FLYWHEEL API ──────────────
+    // ────────────── FIRLATICI TEKERLEK (FLYWHEEL) API ──────────────
 
     /**
-     * Set the shooter wheel speed (percent output 0–1).
+     * Fırlatıcı tekerlek çalışma hızını ayarlar.
      *
-     * @param speed Percent output (0.0 = stopped, 1.0 = full forward).
+     * @param speed Yüzdelik güç (0.0 = durmuş, 1.0 = tam güç ileri).
      */
     public void setShooterSpeed(double speed) {
         wheelLeader.set(speed);
     }
 
-    /** Run the shooter at the default speed defined in constants. */
+    /** Fırlatıcıyı Constants dosyasında belirlenen varsayılan güçte çalıştırır. */
     public void runShooter() {
         setShooterSpeed(ShooterConstants.DEFAULT_SHOOTER_SPEED);
     }
 
-    /** Stop the flywheel motors. */
+    /** Fırlatıcı motorları durdurur (Motorlar coast -serbest- modunda yavaşlayarak duracaktır). */
     public void stopShooter() {
         wheelLeader.set(0.0);
     }
 
-    // ────────────── ANGLE API ──────────────
+    // ────────────── AÇI (ANGLE) API ──────────────
 
     /**
-     * Command the shooter angle to a given setpoint (encoder rotations from zero).
+     * Shooter açısını belirtilen pozisyon hedefine göderir (PID Kullanarak).
      *
-     * @param setpoint Target position in encoder rotations.
+     * @param setpoint Sıfır noktasından itibaren enkoder dönüş sayısı cinsinden hedef pozisyon.
      */
     public void setAngle(double setpoint) {
         this.angleSetpoint = setpoint;
         anglePID.setReference(setpoint, ControlType.kPosition);
     }
 
-    /** Move to the stowed (lowest) angle. */
+    /** Açıyı kapalı (Stow/Sıfır) pozisyona gönderir. */
     public void stowAngle() {
         setAngle(ShooterConstants.ANGLE_STOW);
     }
 
-    /** Stop the angle motors (holds via brake mode). */
+    /** Açı motorlarını durdurur (Motorlar Brake modunda olduğu için olduğu yerde asılı kalır). */
     public void stopAngle() {
         angleLeader.set(0.0);
     }
 
     /**
-     * @return Whether the angle mechanism is within tolerance of the target.
+     * @return Açı mekanizmasının PID hedefine yeterince (hata payı içinde) yaklaşıp yaklaşmadığını döndürür.
      */
     public boolean isAtTargetAngle() {
         return Math.abs(angleEncoder.getPosition() - angleSetpoint) < ShooterConstants.ANGLE_TOLERANCE;
     }
 
-    /** @return Current angle encoder position (rotations). */
+    /** @return Güncel enkoder pozisyonu (Tur cinsinden). */
     public double getCurrentAngle() {
         return angleEncoder.getPosition();
     }
 
-    // ────────────── PERIODIC ──────────────
+    // ────────────── PERİYODİK (PERIODIC) ──────────────
 
     @Override
     public void periodic() {

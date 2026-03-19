@@ -23,30 +23,30 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
 /**
- * Swerve drivetrain subsystem using 4 MK5n modules driven by
- * CTRE TalonFX (Kraken X60) motors, CANcoders, and a Pigeon 2.0 IMU.
+ * Swerve Şasi alt sistemi — 4 adet MK5n modül ile çalışır.
+ * Motorlar CTRE TalonFX (Kraken X60), Enkoderler CANcoder ve IMU Pigeon 2.0 kullanılarak yazılmıştır.
  *
- * Provides field-centric drive capabilities.
+ * Saha merkezli (field-centric) sürüş kabiliyeti sağlar.
  */
 public class DrivetrainSubsystem extends SubsystemBase {
 
-    // ── Swerve Modules ──
+    // ── Swerve Modülleri ──
     private final SwerveModule[] modules;
 
     // ── IMU ──
     private final Pigeon2 pigeon;
 
-    // ── Kinematics & Odometry ──
+    // ── Kinematik & Odometri (Konum Takibi) ──
     private final SwerveDriveKinematics kinematics;
     private final SwerveDriveOdometry odometry;
 
     public DrivetrainSubsystem() {
-        // Pigeon 2.0
+        // Pigeon 2.0 Jiroskop Kurulumu
         pigeon = new Pigeon2(DriveConstants.PIGEON_ID);
         pigeon.getConfigurator().apply(new Pigeon2Configuration());
         pigeon.setYaw(0.0);
 
-        // Create 4 swerve modules (FL, FR, BL, BR)
+        // 4 adet Swerve Modülünün (Ön Sol, Ön Sağ, Arka Sol, Arka Sağ) oluşturulması
         modules = new SwerveModule[] {
             new SwerveModule(
                 "FL",
@@ -92,15 +92,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
     }
 
-    // ────────────── PUBLIC API ──────────────
+    // ────────────── GENEL FONKSİYONLAR (PUBLIC API) ──────────────
 
     /**
-     * Drive the robot using field-centric control.
+     * Saha merkezli (veya robot merkezli) şasi kontrolü sağlar.
      *
-     * @param xSpeed        Forward speed (m/s, positive = away from alliance wall).
-     * @param ySpeed        Strafe speed (m/s, positive = left).
-     * @param rotationSpeed Rotation rate (rad/s, positive = counter-clockwise).
-     * @param fieldRelative Whether speeds are field-relative.
+     * @param xSpeed        İleri/Geri hızı (m/s, pozitif değer ittifak duvarından uzaklaşmayı temsil eder).
+     * @param ySpeed        Sağa/Sola kayma (strafe) hızı (m/s, pozitif değer sola gidişi temsil eder).
+     * @param rotationSpeed Dönme (rotasyon) hızı (rad/s, pozitif değer saat yönünün tersini temsil eder).
+     * @param fieldRelative True ise saha merkezli, false ise robot merkezli sürüş.
      */
     public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldRelative) {
         ChassisSpeeds speeds = fieldRelative
@@ -115,39 +115,39 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
     }
 
-    /** Stop all modules immediately. */
+    /** Tüm modülleri anında durdurur. */
     public void stop() {
         for (SwerveModule module : modules) {
             module.stop();
         }
     }
 
-    /** Reset the gyroscope heading to zero (call when facing downfield). */
+    /** Jiroskop yönünü sıfırlar (Robot karşı tarafa düz bakarken çağrılmalıdır). */
     public void zeroHeading() {
         pigeon.setYaw(0.0);
     }
 
-    /** Reset odometry to a given pose. */
+    /** Robotun odometri (konum) verisini belirli bir Pose (konum+yön) değerine eşitler. */
     public void resetOdometry(Pose2d pose) {
         odometry.resetPosition(getGyroRotation2d(), getModulePositions(), pose);
     }
 
-    /** @return The current estimated pose from odometry. */
+    /** @return Odometriden hesaplanan robotun sahadaki tahmini konumu. */
     public Pose2d getPose() {
         return odometry.getPoseMeters();
     }
 
-    /** @return The gyro heading as a {@link Rotation2d}. */
+    /** @return Rotation2d formatında robotun mevcut gyro açısı. */
     public Rotation2d getGyroRotation2d() {
         return Rotation2d.fromDegrees(pigeon.getYaw().getValueAsDouble());
     }
 
-    /** @return Current heading in degrees (0–360). */
+    /** @return Derece cinsinden mevcut açı yönü (0-360). */
     public double getHeading() {
         return getGyroRotation2d().getDegrees();
     }
 
-    // ────────────── PERIODIC ──────────────
+    // ────────────── PERİYODİK (PERIODIC) ──────────────
 
     @Override
     public void periodic() {
@@ -157,7 +157,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putString("Drivetrain/Pose", getPose().toString());
     }
 
-    // ────────────── HELPERS ──────────────
+    // ────────────── YARDIMCI FONKSİYONLAR (HELPERS) ──────────────
 
     private SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
@@ -168,7 +168,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     // ══════════════════════════════════════════
-    //  INNER CLASS — Single Swerve Module
+    //  İÇ SINIF (INNER CLASS) — Tekil Swerve Modülü
     // ══════════════════════════════════════════
     private static class SwerveModule {
 
@@ -185,7 +185,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             this.name = name;
             this.encoderOffset = offset;
 
-            // Drive motor config
+            // Sürüş (Drive) Motoru Ayarları
             driveMotor = new TalonFX(driveId);
             TalonFXConfiguration driveConfig = new TalonFXConfiguration();
             driveConfig.Slot0.kP = DriveConstants.DRIVE_KP;
@@ -195,7 +195,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             driveMotor.getConfigurator().apply(driveConfig);
 
-            // Steer motor config
+            // Yönlendirme (Steer) Motoru Ayarları
             steerMotor = new TalonFX(steerId);
             TalonFXConfiguration steerConfig = new TalonFXConfiguration();
             steerConfig.Slot0.kP = DriveConstants.STEER_KP;
@@ -205,31 +205,32 @@ public class DrivetrainSubsystem extends SubsystemBase {
             steerConfig.ClosedLoopGeneral.ContinuousWrap = true;
             steerMotor.getConfigurator().apply(steerConfig);
 
-            // CANcoder
+            // CANcoder Mutlak Enkoder Ayarları
             absoluteEncoder = new CANcoder(encoderId);
             CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
             absoluteEncoder.getConfigurator().apply(encoderConfig);
         }
 
         /**
-         * Set the desired state for this module.
-         * Optimises the target to minimise turning (via {@link SwerveModuleState#optimize}).
+         * Modül için istenen hızı ve açıyı uygular.
+         * Dönüşü minimize etmek için ters çevirme senaryolarını düşünür (SwerveModuleState.optimize).
          */
         void setDesiredState(SwerveModuleState desiredState) {
-            // Get current steer angle from CANcoder
+            // CANcoder'dan alınan mevcut yönelim açısı
             double currentAngle = getSteerAngle();
             Rotation2d currentRotation = Rotation2d.fromRotations(currentAngle);
 
-            // Optimise — may reverse drive direction to avoid > 90° turns
+            // Optimizasyon — motorun bir anda 90 dereceden fazla dönmesi yerine 
+            // yönü tersine çevirerek çarkı geri çevirir (Tekerleği ters çalıştırır)
             desiredState.optimize(currentRotation);
 
-            // Drive: convert m/s → rotor rotations/s
+            // Sürüş: m/s hızını motor (rotor) saniyedeki rotasyon değerine dönüştür
             double driveRPS = desiredState.speedMetersPerSecond
                 / DriveConstants.WHEEL_CIRCUMFERENCE
                 * DriveConstants.DRIVE_GEAR_RATIO;
             driveMotor.setControl(driveRequest.withVelocity(driveRPS));
 
-            // Steer: target position in rotations
+            // Yönlendirme: Hangi tur derecesine (pozisyon) bakılacağı belirlenir
             double targetRotations = desiredState.angle.getRotations();
             steerMotor.setControl(steerRequest.withPosition(targetRotations));
         }
@@ -239,12 +240,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
             steerMotor.stopMotor();
         }
 
-        /** @return Current steer angle in rotations (from CANcoder). */
+        /** @return Tur (rotations) cinsinden mevcut dönüş/yönelim açısı (CANcoder'dan). */
         double getSteerAngle() {
             return absoluteEncoder.getAbsolutePosition().getValueAsDouble() - encoderOffset;
         }
 
-        /** @return Drive distance in metres and steer angle. */
+        /** @return Modülün metre cinsinden gittiği toplam mesafe ve o anki yönelim açısı. */
         SwerveModulePosition getPosition() {
             double driveRotations = driveMotor.getPosition().getValueAsDouble();
             double distanceMetres = (driveRotations / DriveConstants.DRIVE_GEAR_RATIO)

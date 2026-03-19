@@ -10,8 +10,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
- * Default drive command that continuously reads joystick inputs and
- * controls the swerve drivetrain in field-centric mode.
+ * Sürücü komutu (Default Drive Command). Joystick girdilerini okuyarak 
+ * Swerve şasiyi saha merkezli (field-centric) modda sürekli olarak kontrol eder.
  */
 public class DriveCommand extends Command {
 
@@ -21,10 +21,10 @@ public class DriveCommand extends Command {
     private final DoubleSupplier rotationSupplier;
 
     /**
-     * @param drivetrain       The drivetrain subsystem.
-     * @param xSpeedSupplier   Forward/backward axis (positive = forward).
-     * @param ySpeedSupplier   Left/right axis (positive = left).
-     * @param rotationSupplier Rotation axis (positive = counter-clockwise).
+     * @param drivetrain       Kullanılacak şasi alt sistemi.
+     * @param xSpeedSupplier   İleri/geri ekseni (pozitif = ileri).
+     * @param ySpeedSupplier   Sağ/sol ekseni (pozitif = sol).
+     * @param rotationSupplier Dönme ekseni (pozitif = saat yönünün tersine dönüş).
      */
     public DriveCommand(
         DrivetrainSubsystem drivetrain,
@@ -42,7 +42,7 @@ public class DriveCommand extends Command {
 
     @Override
     public void execute() {
-        // Apply deadband and scale to max speed
+        // Joystickteki küçük titremeleri yoksay (Deadband uygula) ve max hızla çarp
         double xSpeed = MathUtil.applyDeadband(xSpeedSupplier.getAsDouble(), OIConstants.DEADBAND)
             * DriveConstants.MAX_SPEED;
         double ySpeed = MathUtil.applyDeadband(ySpeedSupplier.getAsDouble(), OIConstants.DEADBAND)
@@ -60,6 +60,6 @@ public class DriveCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return false; // Runs until interrupted
+        return false; // Başka bir komut tarafından bölünene kadar sürekli çalışır (Varsayılan komut mantığı)
     }
 }

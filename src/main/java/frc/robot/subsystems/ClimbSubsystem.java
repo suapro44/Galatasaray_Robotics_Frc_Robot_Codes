@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
 
 /**
- * Climb subsystem — single NEO motor (SparkMax) with PID position control
- * via the internal relative encoder.  Provides a one-button climb to Level 3.
+ * Tırmanma (Climb) alt sistemi — PID pozisyon kontrollü, dâhili relatif
+ * enkoder kullanan tekli NEO motoru (SparkMax). Tek tuşla Seviye 3'e tırmanma sağlar.
  */
 public class ClimbSubsystem extends SubsystemBase {
 
@@ -30,7 +30,7 @@ public class ClimbSubsystem extends SubsystemBase {
     public ClimbSubsystem() {
         motor = new SparkMax(ClimbConstants.MOTOR_ID, MotorType.kBrushless);
 
-        // Configure motor with PID
+        // Motoru PID ile yapılandır
         SparkMaxConfig config = new SparkMaxConfig();
         config
             .smartCurrentLimit(ClimbConstants.CURRENT_LIMIT)
@@ -42,58 +42,58 @@ public class ClimbSubsystem extends SubsystemBase {
             .outputRange(ClimbConstants.CLIMB_MIN_OUTPUT, ClimbConstants.CLIMB_MAX_OUTPUT);
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Relative encoder — zero position at startup (fully retracted)
+        // Relatif enkoder — Başlangıç noktasını sıfır kabul eder (tamamen aşağıda/kapalı olduğunu varsayar)
         encoder = motor.getEncoder();
         encoder.setPosition(0.0);
 
-        // Closed-loop controller
+        // Kapalı çevrim (Closed-loop) kontrolcüsü
         pidController = motor.getClosedLoopController();
     }
 
-    // ────────────── PUBLIC API ──────────────
+    // ────────────── GENEL FONKSİYONLAR (PUBLIC API) ──────────────
 
     /**
-     * Command the climber to Level 3 height.
+     * Tırmanıcıya Seviye 3 yüksekliğine çıkmasını emreder.
      */
     public void climbToLevel3() {
         setPosition(ClimbConstants.LEVEL_3_SETPOINT);
     }
 
     /**
-     * Retract the climber to stow position.
+     * Tırmanıcıyı toplama (stow) / kapalı pozisyonuna indirir.
      */
     public void stow() {
         setPosition(ClimbConstants.STOW_SETPOINT);
     }
 
     /**
-     * Set the climber to an arbitrary position target.
+     * Tırmanıcıyı istenilen herhangi bir pozisyona ayarlar.
      *
-     * @param position Target in encoder rotations.
+     * @param position Enkoder tur (rotations) cinsinden hedef pozisyon.
      */
     public void setPosition(double position) {
         this.targetPosition = position;
         pidController.setReference(position, ControlType.kPosition);
     }
 
-    /** Stop the climb motor (holds via brake mode). */
+    /** Tırmanma motorunu durdurur (Brake modu sayesinde olduğu yerde kalır). */
     public void stop() {
         motor.set(0.0);
     }
 
     /**
-     * @return Whether the climber is within tolerance of its target position.
+     * @return Tırmanıcının hedef pozisyona (hata payı içerisinde) ulaşıp ulaşmadığı.
      */
     public boolean isAtTarget() {
         return Math.abs(encoder.getPosition() - targetPosition) < ClimbConstants.POSITION_TOLERANCE;
     }
 
-    /** @return Current encoder position (rotations). */
+    /** @return Güncel enkoder pozisyonu (Tur/Rotations cinsinden). */
     public double getCurrentPosition() {
         return encoder.getPosition();
     }
 
-    // ────────────── PERIODIC ──────────────
+    // ────────────── PERİYODİK (PERIODIC) ──────────────
 
     @Override
     public void periodic() {

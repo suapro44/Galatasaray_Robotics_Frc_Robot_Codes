@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ChamberConstants;
 
 /**
- * Chamber (transfer) subsystem — single NEO motor that moves the game piece
- * from the intake through to the shooter.
+ * Ara bölme (Chamber / Transfer) alt sistemi — Oyun parçasını intake'ten (yerden alma)
+ * alıp shooter'a (fırlatıcı) taşıyan tekli NEO motoru.
  */
 public class ChamberSubsystem extends SubsystemBase {
 
@@ -30,9 +30,9 @@ public class ChamberSubsystem extends SubsystemBase {
         motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    // ────────────── PUBLIC API ──────────────
+    // ────────────── GENEL FONKSİYONLAR (PUBLIC API) ──────────────
 
-    /** Run the chamber forward at configured speed. */
+    /** Chamber'ı (Ara bölmeyi) ayarlanan hızda ileri doğru çalıştırır. */
     public void runChamber() {
         motor.set(ChamberConstants.CHAMBER_SPEED);
     }
@@ -42,17 +42,17 @@ public class ChamberSubsystem extends SubsystemBase {
         motor.set(-ChamberConstants.CHAMBER_SPEED);
     }
 
-    /** Stop the chamber motor. */
+    /** Chamber motorunu durdurur. */
     public void stop() {
         motor.set(0.0);
     }
 
-    /** @return Whether the chamber is currently moving. */
+    /** @return Chamber motorunun şu an dönüp dönmediği. */
     public boolean isRunning() {
         return Math.abs(motor.get()) > 0.05;
     }
 
-    // ────────────── PERIODIC ──────────────
+    // ────────────── PERİYODİK (PERIODIC) ──────────────
 
     @Override
     public void periodic() {

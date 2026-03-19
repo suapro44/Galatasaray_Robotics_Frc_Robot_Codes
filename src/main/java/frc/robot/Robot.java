@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
- * The main robot class. This is a TimedRobot that delegates all subsystem
- * and command configuration to {@link RobotContainer}.
+ * Ana robot sınıfı. Bu bir TimedRobot'tur ve tüm alt sistem 
+ * ile komut konfigürasyonlarını {@link RobotContainer} sınıfına devreder.
  */
 public class Robot extends TimedRobot {
 
@@ -15,28 +15,29 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        // Instantiate RobotContainer — this performs all subsystem and command setup
+        // RobotContainer'ı oluştur — tüm alt sistemler ve komutlar burada hazırlanır
         robotContainer = new RobotContainer();
     }
 
     @Override
     public void robotPeriodic() {
-        // Run the scheduler — this is the heartbeat of the Command-Based framework
+        // Scheduler'ı çalıştır — bu, Komut Tabanlı (Command-Based) mimarinin kalbidir
         CommandScheduler.getInstance().run();
     }
 
     @Override
     public void disabledInit() {
-        // No-op
+        // Robot devre dışı (disabled) bırakıldığında çalışır
     }
 
     @Override
     public void disabledPeriodic() {
-        // No-op
+        // Robot devre dışı iken sürekli çalışır
     }
 
     @Override
     public void autonomousInit() {
+        // Otonom periyodu başladığında çalışacak komutu al
         autonomousCommand = robotContainer.getAutonomousCommand();
         if (autonomousCommand != null) {
             autonomousCommand.schedule();
@@ -45,12 +46,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        // No-op — CommandScheduler handles everything
+        // Otonom sırasında sürekli çalışır (Scheduler işlemi devralır)
     }
 
     @Override
     public void teleopInit() {
-        // Cancel autonomous command when teleop starts
+        // Teleop (Sürücü kontrolü) başladığında otonom komutunu iptal et
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
@@ -58,7 +59,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        // No-op — CommandScheduler handles everything
+        // Teleop sırasında sürekli çalışır (Scheduler işlemi devralır)
     }
 
     @Override

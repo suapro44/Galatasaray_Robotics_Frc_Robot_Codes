@@ -15,28 +15,28 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /**
- * This class is the glue that binds the controls on the physical operator
- * interface to commands and command groups. It is also where subsystems
- * are instantiated.
+ * Bu sınıf, fiziksel operatör arayüzü (kontrolcüler) ile komutlar/alt sistemler
+ * arasındaki bağlantıların (bağlayıcı, "glue") kurulduğu yerdir. Alt sistemler
+ * de burada tanımlanır (instantiate edilir).
  *
- * <h2>Controller Layout (Xbox)</h2>
+ * <h2>Kontrolcü Düzeni (Xbox)</h2>
  * <table>
- *   <tr><td>Left Stick</td><td>Field-centric translation (X/Y)</td></tr>
- *   <tr><td>Right Stick X</td><td>Rotation</td></tr>
- *   <tr><td>Start Button</td><td>Zero gyro heading</td></tr>
- *   <tr><td>Right Bumper</td><td>Intake (hold)</td></tr>
- *   <tr><td>Left Bumper</td><td>Chamber feed (hold)</td></tr>
- *   <tr><td>Right Trigger</td><td>Shoot (spin up + feed)</td></tr>
- *   <tr><td>Left Trigger</td><td>Angle preset (Subwoofer)</td></tr>
- *   <tr><td>A Button</td><td>Stow shooter angle</td></tr>
- *   <tr><td>B Button</td><td>Reverse intake (eject)</td></tr>
- *   <tr><td>X Button</td><td>Angle preset (Podium)</td></tr>
- *   <tr><td>Y Button</td><td>Climb to Level 3</td></tr>
+ *   <tr><td>Sol Analog (Left Stick)</td><td>Saha merkezli sürüş (X/Y)</td></tr>
+ *   <tr><td>Sağ Analog X (Right Stick X)</td><td>Dönüş / Rotasyon</td></tr>
+ *   <tr><td>Start Tuşu</td><td>Gyro açısını sıfırlar (İleri yönü belirler)</td></tr>
+ *   <tr><td>Sağ Tampon (RB)</td><td>Yerden alma - Intake (Basılı tut)</td></tr>
+ *   <tr><td>Sol Tampon (LB)</td><td>Ara bölme - Chamber ileri (Basılı tut)</td></tr>
+ *   <tr><td>Sağ Tetik (RT)</td><td>Ateş etme sekansı (Motorları hızlandır + parçayı ilet)</td></tr>
+ *   <tr><td>Sol Tetik (LT)</td><td>Açı ayarı (Subwoofer / Yakın atış)</td></tr>
+ *   <tr><td>A Tuşu</td><td>Açı ayarı (Toplanmış pozisyon - Stow)</td></tr>
+ *   <tr><td>B Tuşu</td><td>Intake ters (Kusma - Eject)</td></tr>
+ *   <tr><td>X Tuşu</td><td>Açı ayarı (Podium / Uzak atış)</td></tr>
+ *   <tr><td>Y Tuşu</td><td>Seviye 3'e tırman</td></tr>
  * </table>
  */
 public class RobotContainer {
 
-    // ── Subsystems ──
+    // ── Alt Sistemler (Subsystems) ──
     private final DrivetrainSubsystem drivetrain = new DrivetrainSubsystem();
     private final IntakeSubsystem     intake     = new IntakeSubsystem();
     private final ChamberSubsystem    chamber    = new ChamberSubsystem();
@@ -44,7 +44,7 @@ public class RobotContainer {
     private final ClimbSubsystem      climb      = new ClimbSubsystem();
     private final VisionSubsystem     vision     = new VisionSubsystem();
 
-    // ── Controllers ──
+    // ── Kontrolcüler (Controllers) ──
     private final CommandXboxController driverController =
         new CommandXboxController(OIConstants.DRIVER_CONTROLLER_PORT);
 
@@ -53,11 +53,11 @@ public class RobotContainer {
         configureButtonBindings();
     }
 
-    // ────────────── DEFAULT COMMANDS ──────────────
+    // ────────────── VARSAYILAN KОMUTLAR (DEFAULT COMMANDS) ──────────────
 
     private void configureDefaultCommands() {
-        // Default drive command — left stick for translation, right stick X for rotation
-        // Note: Y axis is negated because pushing the stick forward gives a negative value
+        // Varsayılan sürüş komutu — Sol analog hareket (translation), sağ analog X yatay dönüş (rotation) içindir.
+        // Not: Joysticklerde ileri itildiğinde negatif değer geldiği için Y ekseni eksi ile çarpılır (-driverController.getLeftY()).
         drivetrain.setDefaultCommand(
             new DriveCommand(
                 drivetrain,
@@ -68,16 +68,16 @@ public class RobotContainer {
         );
     }
 
-    // ────────────── BUTTON BINDINGS ──────────────
+    // ────────────── TUŞ ATAMALARI (BUTTON BINDINGS) ──────────────
 
     private void configureButtonBindings() {
 
-        // ── Start: Zero Gyro ──
+        // ── Start Tuşu: Gyro'yu sıfırlar (Saha Merkezli sürüş için robotun baktığı yönü İLERİ kabul eder) ──
         driverController.start().onTrue(
             Commands.runOnce(() -> drivetrain.zeroHeading(), drivetrain)
         );
 
-        // ── Right Bumper: Intake (hold to run, release to stop) ──
+        // ── Sağ Tampon (RB): Intake (Basılı tutulduğunda çalışır, bırakıldığında durur) ──
         driverController.rightBumper()
             .whileTrue(Commands.startEnd(
                 intake::runIntake,
@@ -85,7 +85,7 @@ public class RobotContainer {
                 intake
             ));
 
-        // ── B Button: Reverse Intake / Eject (hold) ──
+        // ── B Tuşu: Ters Intake / Kusma (Basılı tutulduğunda çalışır) ──
         driverController.b()
             .whileTrue(Commands.startEnd(
                 intake::reverseIntake,
@@ -93,7 +93,7 @@ public class RobotContainer {
                 intake
             ));
 
-        // ── Left Bumper: Chamber Feed (hold to run) ──
+        // ── Sol Tampon (LB): Ara Bölme (Chamber) İleri (Basılı tut) ──
         driverController.leftBumper()
             .whileTrue(Commands.startEnd(
                 chamber::runChamber,
@@ -101,21 +101,21 @@ public class RobotContainer {
                 chamber
             ));
 
-        // ── Right Trigger (> 0.5): Shoot sequence ──
-        //    1. Spin up shooter wheels
-        //    2. Wait until angle is on target
-        //    3. Feed chamber
-        //    Release to stop everything
+        // ── Sağ Tetik (RT > 0.5): Atış Sekansı ──
+        //    1. Fırlatıcı tekerlekleri hızlandır (Spin up)
+        //    2. Yeterli süre bekle
+        //    3. Ara bölmeyi (Chamber) çalıştırarak parçayı tekerleklere ilet
+        //    Tetik bırakıldığında her şeyi durdur
         driverController.rightTrigger(0.5)
             .whileTrue(
                 Commands.parallel(
-                    // Spin up shooter
+                    // Fırlatıcıyı başlat
                     Commands.startEnd(
                         shooter::runShooter,
                         shooter::stopShooter,
                         shooter
                     ),
-                    // Feed chamber after a short delay for spin-up
+                    // Hızlanma için kısa bir gecikme (0.5 sn) sonrası chamber'ı besle
                     Commands.sequence(
                         Commands.waitSeconds(0.5),
                         Commands.startEnd(
@@ -127,39 +127,39 @@ public class RobotContainer {
                 )
             );
 
-        // ── Left Trigger (> 0.5): Angle to Subwoofer preset ──
+        // ── Sol Tetik (LT > 0.5): Açı - Subwoofer (Yakın Atış) Preset'i ──
         driverController.leftTrigger(0.5)
             .onTrue(Commands.runOnce(
                 () -> shooter.setAngle(ShooterConstants.ANGLE_SUBWOOFER), shooter
             ));
 
-        // ── X Button: Angle to Podium preset ──
+        // ── X Tuşu: Açı - Podium (Uzak Atış) Preset'i ──
         driverController.x()
             .onTrue(Commands.runOnce(
                 () -> shooter.setAngle(ShooterConstants.ANGLE_PODIUM), shooter
             ));
 
-        // ── A Button: Stow shooter angle ──
+        // ── A Tuşu: Açıyı sıfırla/topla (Stow) ──
         driverController.a()
             .onTrue(Commands.runOnce(
                 shooter::stowAngle, shooter
             ));
 
-        // ── Y Button: Climb to Level 3 ──
+        // ── Y Tuşu: Seviye 3 için Tırmanma ──
         driverController.y()
             .onTrue(Commands.runOnce(
                 climb::climbToLevel3, climb
             ));
     }
 
-    // ────────────── AUTONOMOUS ──────────────
+    // ────────────── OTONOM (AUTONOMOUS) ──────────────
 
     /**
-     * Returns the autonomous command to run.  Replace with your path-following
-     * or auto routine as the season progresses.
+     * Çalıştırılacak otonom komutunu döndürür.
+     * Sezon ilerledikçe burayı PathPlanner veya Choreo rotalarıyla değiştirebilirsiniz.
      */
     public Command getAutonomousCommand() {
-        // Placeholder — drive forward for 2 seconds then stop
+        // Geçici Otonom: Sadece 2 saniye ileri sür ve dur.
         return Commands.run(
             () -> drivetrain.drive(1.0, 0, 0, false), drivetrain
         ).withTimeout(2.0)

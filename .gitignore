@@ -1,0 +1,16 @@
+# Derleme dosyaları (En önemlisi bu, hatayı bu çözer)
+build/
+bin/
+obj/
+
+# Geçici sistem dosyaları
+.gradle/
+.vs/
+.vscode/
+*.pdb
+*.exe
+*.dll
+
+# İşletim sistemi kalıntıları
+Thumbs.db
+.DS_Store

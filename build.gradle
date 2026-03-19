@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2025.3.2"
+    id "edu.wpi.first.GradleRIO" version "2026.2.1"
 }
 
 java {
@@ -39,7 +39,7 @@ repositories {
         url "https://maven.ctr-electronics.com/release/"
     }
     maven {
-        url "https://software-metadata.revrobotics.com/maven/release/"
+        url "https://maven.revrobotics.com/"
     }
 }
 

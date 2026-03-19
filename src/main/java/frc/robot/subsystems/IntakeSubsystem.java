@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 /**
- * Intake subsystem — two NEO motors (SparkMax) in a leader/follower
- * configuration.  The follower mirrors the leader's output automatically.
+ * Yerden alma (Intake) alt sistemi — Leader/Follower (lider/takipçi) konfigürasyonunda
+ * iki adet NEO motoru (SparkMax) kullanır. Takipçi, liderin çıkışını otomatik olarak taklit eder.
  */
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -25,14 +25,14 @@ public class IntakeSubsystem extends SubsystemBase {
         leaderMotor = new SparkMax(IntakeConstants.LEADER_ID, MotorType.kBrushless);
         followerMotor = new SparkMax(IntakeConstants.FOLLOWER_ID, MotorType.kBrushless);
 
-        // Leader config
+        // Lider (Leader) motor konfigürasyonu
         SparkMaxConfig leaderConfig = new SparkMaxConfig();
         leaderConfig
             .smartCurrentLimit(IntakeConstants.CURRENT_LIMIT)
             .idleMode(IdleMode.kBrake);
         leaderMotor.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        // Follower config — follows leader, same direction
+        // Takipçi (Follower) motor konfigürasyonu — Lideri takip eder
         SparkMaxConfig followerConfig = new SparkMaxConfig();
         followerConfig
             .smartCurrentLimit(IntakeConstants.CURRENT_LIMIT)
@@ -41,29 +41,29 @@ public class IntakeSubsystem extends SubsystemBase {
         followerMotor.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    // ────────────── PUBLIC API ──────────────
+    // ────────────── GENEL FONKSİYONLAR (PUBLIC API) ──────────────
 
-    /** Run intake forward at the configured speed. */
+    /** Intake motorlarını ayarlanan hızda içeri doğru çalıştırır. */
     public void runIntake() {
         leaderMotor.set(IntakeConstants.INTAKE_SPEED);
     }
 
-    /** Run intake in reverse (eject). */
+    /** Intake motorlarını ters yönde (kusma/eject) çalıştırır. */
     public void reverseIntake() {
         leaderMotor.set(-IntakeConstants.INTAKE_SPEED);
     }
 
-    /** Stop the intake motors. */
+    /** Intake motorlarını durdurur. */
     public void stop() {
         leaderMotor.set(0.0);
     }
 
-    /** @return Whether the intake is currently running. */
+    /** @return Intake motorlarının şu an çalışıp çalışmadığı. */
     public boolean isRunning() {
         return Math.abs(leaderMotor.get()) > 0.05;
     }
 
-    // ────────────── PERIODIC ──────────────
+    // ────────────── PERİYODİK (PERIODIC) ──────────────
 
     @Override
     public void periodic() {

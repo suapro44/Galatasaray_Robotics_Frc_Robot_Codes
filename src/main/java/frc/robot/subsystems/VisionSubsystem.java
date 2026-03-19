@@ -9,22 +9,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
 /**
- * Vision subsystem interfacing with two Limelight cameras via NetworkTables.
+ * Görüntü İşleme (Vision) alt sistemi — NetworkTables üzerinden iki adet Limelight kamerasıyla haberleşir.
  * <ul>
- *   <li><b>Main Limelight (3)</b>  — AprilTag & game piece (Fuel) detection</li>
- *   <li><b>Climb Limelight (3A)</b> — AprilTag detection for climbing alignment</li>
+ *   <li><b>Ana Limelight (Main)</b>  — Saha içi AprilTag'leri ve oyun parçalarını takip eder</li>
+ *   <li><b>Tırmanma Limelight (Climb)</b> — Sadece tırmanma hizalaması için AprilTag'leri hedefler</li>
  * </ul>
  *
- * Provides getter methods so other subsystems / commands can query alignment data.
+ * Diğer alt sistemlerin ve komutların (Commands) hizalama verisini sorgulayabilmesi için getter metotları sağlar.
  */
 public class VisionSubsystem extends SubsystemBase {
 
-    // ── NetworkTable entries — Main Limelight ──
+    // ── NetworkTable verileri — Ana Limelight ──
     private final NetworkTableEntry mainTx;
     private final NetworkTableEntry mainTy;
     private final NetworkTableEntry mainTv;
 
-    // ── NetworkTable entries — Climb Limelight ──
+    // ── NetworkTable verileri — Tırmanma Limelight ──
     private final NetworkTableEntry climbTx;
     private final NetworkTableEntry climbTy;
     private final NetworkTableEntry climbTv;
@@ -44,46 +44,46 @@ public class VisionSubsystem extends SubsystemBase {
         climbTv = climbTable.getEntry("tv");
     }
 
-    // ────────────── MAIN LIMELIGHT GETTERS ──────────────
+    // ────────────── ANA KAMERA (MAIN LIMELIGHT) VERİLERİ ──────────────
 
-    /** @return Horizontal offset from crosshair to target (degrees). */
+    /** @return Hedefin merkeze olan yatay sapması (Derece/Degrees). */
     public double getMainTx() {
         return mainTx.getDouble(0.0);
     }
 
-    /** @return Vertical offset from crosshair to target (degrees). */
+    /** @return Hedefin merkeze olan dikey sapması (Derece/Degrees). */
     public double getMainTy() {
         return mainTy.getDouble(0.0);
     }
 
-    /** @return Whether the main Limelight has a valid target (1.0 = yes). */
+    /** @return Ana Limelight'ın geçerli bir hedef görüp görmediği (1.0 = Evet). */
     public boolean hasMainTarget() {
         return mainTv.getDouble(0.0) >= 1.0;
     }
 
-    // ────────────── CLIMB LIMELIGHT GETTERS ──────────────
+    // ────────────── TIRMANMA KAMERASI (CLIMB LIMELIGHT) VERİLERİ ──────────────
 
-    /** @return Horizontal offset from crosshair to target (degrees). */
+    /** @return Hedefin merkeze olan yatay sapması (Derece). */
     public double getClimbTx() {
         return climbTx.getDouble(0.0);
     }
 
-    /** @return Vertical offset from crosshair to target (degrees). */
+    /** @return Hedefin merkeze olan dikey sapması (Derece). */
     public double getClimbTy() {
         return climbTy.getDouble(0.0);
     }
 
-    /** @return Whether the climb Limelight has a valid target. */
+    /** @return Tırmanma Limelight'ının geçerli bir hedef görüp görmediği. */
     public boolean hasClimbTarget() {
         return climbTv.getDouble(0.0) >= 1.0;
     }
 
-    // ────────────── PIPELINE CONTROL ──────────────
+    // ────────────── BORU HATTI (PIPELINE) KONTROLÜ ──────────────
 
     /**
-     * Set the vision processing pipeline on the main Limelight.
+     * Ana Limelight üzerinde görüntü işleme boru hattını (pipeline) değiştirir.
      *
-     * @param pipeline Pipeline index (0–9).
+     * @param pipeline Boru hattı indeksi (0–9).
      */
     public void setMainPipeline(int pipeline) {
         NetworkTableInstance.getDefault()
@@ -93,9 +93,9 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Set the vision processing pipeline on the climb Limelight.
+     * Tırmanma Limelight üzerinde görüntü işleme boru hattını (pipeline) değiştirir.
      *
-     * @param pipeline Pipeline index (0–9).
+     * @param pipeline Boru hattı indeksi (0–9).
      */
     public void setClimbPipeline(int pipeline) {
         NetworkTableInstance.getDefault()
@@ -104,7 +104,7 @@ public class VisionSubsystem extends SubsystemBase {
             .setNumber(pipeline);
     }
 
-    // ────────────── PERIODIC ──────────────
+    // ────────────── PERİYODİK (PERIODIC) ──────────────
 
     @Override
     public void periodic() {

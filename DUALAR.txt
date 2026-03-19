@@ -1,0 +1,54 @@
+/*
+ * ==========================================================
+ * * 1. AYET-EL KÜRSİ 
+ * Arapça: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ
+ * Okunuşu: Allahü lâ ilâhe illâ hüvel hayyül kayyûm. Lâ te'huzühû sinetün ve lâ nevm. 
+ * Lehû mâ fis-semâvâti vemâ fil erd. Menzellezî yeşfeu indehû illâ biiznih. 
+ * Ya'lemü mâ beyne eydîhim vemâ halfehüm velâ yühîtûne bişey'in min ilmihî 
+ * illâ bimâ şâe vesia kürsiyyühüssemâvâti vel erd. Velâ yeûdühü hıfzuhumâ 
+ * ve hüvel aliyyül azîm.
+ * Anlamı: Allah, kendisinden başka hiçbir ilâh bulunmayandır. Diridir, kayyumdur. Onu ne bir uyuklama tutabilir, ne de bir uyku...
+ *
+ * * 2. FELAK SURESİ 
+ * Arapça: قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ﴿١﴾ مِنْ شَرِّ مَا خَلَقَ ﴿٢﴾
+ * Okunuşu: Kul e'ûzü birabbil felak. Min şerri mâ halak. Ve min şerri ğâsikın izâ vekab. 
+ * Ve min şerrin-neffâsâti fil ukad. Ve min şerri hâsidin izâ hased.
+ * Anlamı: De ki: Yarattığı şeylerin kötülüğünden, karanlığı çöküp bastırdığında gecenin kötülüğünden... sabahın Rabbine sığınırım.
+ *
+ * * 3. NAS SURESİ 
+ * Arapça: قُلْ أَعُوذُ بِرَبِّ النَّاسِ ﴿١﴾ مَلِكِ النَّاسِ ﴿٢﴾
+ * Okunuşu: Kul e'ûzü birabbin nâs. Melikin nâs. İlâhin nâs. Min şerril vesvâsil hannâs. 
+ * Ellezî yüvesvisü fî sudûrin nâs. Minel cinneti ven nâs.
+ * Anlamı: De ki: Cinlerden ve insanlardan; insanların kalplerine vesvese veren sinsi vesvesecinin kötülüğünden, insanların Rabbine sığınırım.
+ *
+ * * 4. FETİH SURESİ 1-3. AYETLER 
+ * Arapça: إِنَّا فَتَحْنَا لَكَ فَتْحًا مُبِينًا ﴿١﴾ ... وَيَنْصُرَكَ اللَّهُ نَصْرًا عَزِيزًا ﴿٣﴾
+ * Okunuşu: İnnâ fetahnâ leke fethan mübînâ. Liyagfira lekallâhu mâ tekaddeme min zenbike 
+ * ve mâ teahhara ve yutimme ni’metehu aleyke ve yehdiyeke sırâtan mustekîmâ. 
+ * Ve yensurakallâhu nasran azîzâ.
+ * Anlamı: Şüphesiz biz sana apaçık bir fetih verdik. (...) ve Allah sana şanlı bir zaferle yardım etsin.
+ *
+ * * 5. RABBİ YESSİR 
+ * Arapça: رَبِّ يَسِّرْ وَلَا تُعَسِّرْ رَبِّ تَمِّمْ بِالْخَيْرِ
+ * Okunuşu: Rabbi yessir velâ tüassir, Rabbi temmim bil hayr.
+ * Anlamı: Rabbim kolaylaştır, zorlaştırma. Rabbim hayırla sonuçlandır.
+ *
+ * * 6. TAHA SURESİ 25-26. AYETLER 
+ * Arapça: رَبِّ اشْرَحْ لِي صَدْرِي ﴿٢٥﴾ وَيَسِّرْ لِي أَمْرِي ﴿٢٦﴾
+ * Okunuşu: Rabbişrah lî sadrî. Ve yessir lî emrî. Vahlül ukdeten min lisânî. Yefkahû kavlî.
+ * Anlamı: Rabbim! Göğsümü genişlet ve işimi bana kolaylaştır.
+ *
+ * * 7. KALEM SURESİ 51-52. AYETLER
+ * Arapça: وَإِنْ يَكَادُ الَّذِينَ كَفَرُوا لَيُزْلِقُونَكَ بِأَبْصَارِهِمْ لَمَّا سَمِعُوا الذِّكْرَ
+ * Okunuşu: Ve in yekâdüllezîne keferû leyüzlikûneke biebsârihim lemmâ semiûz-zikra 
+ * ve yekûlûne innehu lemecnûn. Ve mâ huve illâ zikrun lil âlemîn.
+ * Anlamı: İnkâr edenler Kur'an'ı işittiklerinde az kalsın gözleriyle seni devireceklerdi...
+ *
+ * * 8. KORUNMA DUASI - BİSMİLLAHİLLEZİ 
+ * Arapça: بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ
+ * Okunuşu: Bismillâhillezî lâ yedurru me’asmihî şey’ün fil ardı ve lâ fissemâi 
+ * ve hüves-semî'ul alîm.
+ * Anlamı: İsmiyle yerde ve gökte hiçbir şeyin zarar veremeyeceği Allah'ın adıyla. O, hakkıyla işiten ve bilendir.
+ * ==========================================================
+ */
+ 

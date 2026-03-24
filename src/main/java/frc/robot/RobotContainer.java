@@ -7,10 +7,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AutoAimCommand;
-import frc.robot.commands.AutoClimbAlignCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.ChamberSubsystem;
-import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -33,9 +31,7 @@ import frc.robot.subsystems.VisionSubsystem;
  *   <tr><td>A Tuşu</td><td>Açı ayarı (Toplanmış pozisyon - Stow)</td></tr>
  *   <tr><td>B Tuşu</td><td>Intake ters (Kusma - Eject)</td></tr>
  *   <tr><td>X Tuşu</td><td>Açı ayarı (Podium / Uzak atış)</td></tr>
- *   <tr><td>Y Tuşu</td><td>Seviye 3'e tırman</td></tr>
  *   <tr><td>D-Pad Yukarı</td><td>Açı ayarı (Subwoofer / Yakın atış)</td></tr>
- *   <tr><td>D-Pad Aşağı</td><td>Tırmanma AprilTag Hizalaması (Auto Climb Align)</td></tr>
  * </table>
  */
 public class RobotContainer {
@@ -45,7 +41,6 @@ public class RobotContainer {
     private final IntakeSubsystem     intake     = new IntakeSubsystem();
     private final ChamberSubsystem    chamber    = new ChamberSubsystem();
     private final ShooterSubsystem    shooter    = new ShooterSubsystem();
-    private final ClimbSubsystem      climb      = new ClimbSubsystem();
     private final VisionSubsystem     vision     = new VisionSubsystem();
 
     // ── Kontrolcüler (Controllers) ──
@@ -161,10 +156,6 @@ public class RobotContainer {
                 () -> shooter.setAngle(ShooterConstants.ANGLE_SUBWOOFER), shooter
             ));
 
-        // ── D-Pad Aşağı (POV 180): Otomatik Tırmanma Hizalaması (Climb Limelight ile) ──
-        driverController.pov(180)
-            .whileTrue(new AutoClimbAlignCommand(drivetrain, vision));
-
         // ── X Tuşu: Açı - Podium (Uzak Atış) Preset'i ──
         driverController.x()
             .onTrue(Commands.runOnce(
@@ -175,12 +166,6 @@ public class RobotContainer {
         driverController.a()
             .onTrue(Commands.runOnce(
                 shooter::stowAngle, shooter
-            ));
-
-        // ── Y Tuşu: Seviye 3 için Tırmanma ──
-        driverController.y()
-            .onTrue(Commands.runOnce(
-                climb::climbToLevel3, climb
             ));
     }
 

@@ -128,18 +128,4 @@ public class VisionSubsystem extends SubsystemBase {
         return limelightTable.getEntry("tx").getDouble(0.0);
     }
 
-    // Tırmanma Limelight işlemleri için
-    private final NetworkTable climbTable = NetworkTableInstance.getDefault().getTable("limelight-climb");
-
-    public boolean hasClimbTarget() {
-        return climbTable.getEntry("tv").getDouble(0.0) == 1.0;
-    }
-
-    public double getClimbTx() {
-        return climbTable.getEntry("tx").getDouble(0.0);
-    }
-
-    public double getClimbTy() {
-        return climbTable.getEntry("ty").getDouble(0.0);
-    }
 }

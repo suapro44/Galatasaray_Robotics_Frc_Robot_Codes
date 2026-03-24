@@ -181,57 +181,18 @@ public final class Constants {
         public static final double ANGLE_TOLERANCE = 0.5; // Tur
     }
 
-    // ────────────────────────────────────
-    //  CLIMB (Tırmanma - 1× NEO)
-    // ────────────────────────────────────
-    public static final class ClimbConstants {
-        // TODO: Climb motor CAN ID'sini girin
-        public static final int MOTOR_ID = 21;
-
-        // TODO: Tırmanma mekanizmasındaki redüktör (gearbox) oranını (Örn: 25:1 ise 25) girin
-        public static final double GEAR_RATIO = 25.0;
-
-        // PID Değerleri (Pozisyon kontrolü)
-        // TODO: Tırmanma mekanizması PID ayarlarını yapın
-        public static final double CLIMB_KP = 0.1;
-        public static final double CLIMB_KI = 0.0;
-        public static final double CLIMB_KD = 0.005;
-        public static final double CLIMB_MIN_OUTPUT = -1.0;
-        public static final double CLIMB_MAX_OUTPUT =  1.0;
-
-        // Hedef Pozisyonlar (Redüktör çıkışı tur sayısı)
-        // TODO: Tırmanma şaftının kaç tur dönmesi gerektiğini test ederek bulup güncelleyin
-        public static final double LEVEL_3_SETPOINT = 10.0; // Örnek hedef
-        public static final double STOW_SETPOINT    = 0.0;
-
-        public static final double POSITION_TOLERANCE = 0.1; // Tur
-
-        public static final int CURRENT_LIMIT = 60; // Amper
-    }
-
     // ──────────────────────────────────
     //  VISION (Görüntü İşleme - 2× Limelight)
     // ──────────────────────────────────
     public static final class VisionConstants {
         // TODO: Limelight arayüzünden kameralara verdiğiniz isimleri buraya yazın
         public static final String MAIN_LIMELIGHT  = "limelight-main";
-        public static final String CLIMB_LIMELIGHT = "limelight-climb";
 
         // TODO: Limelight otomatik hizalama (Auto-aim) PID katsayılarını yapın
         // tx değerine göre şasiyi döndürmek için kullanılan PID değerleri
         public static final double AIM_KP = 0.05;
         public static final double AIM_KI = 0.0;
         public static final double AIM_KD = 0.005;
-
-        // Tırmanma (Climb) AprilTag hizalaması için PID değerleri
-        // TODO: Bu PID değerlerini robot sahaya inince test ederek düzeltin
-        public static final double CLIMB_ALIGN_KP = 0.05;
-        public static final double CLIMB_ALIGN_KD = 0.002;
-        public static final double CLIMB_DISTANCE_KP = 0.1;
-        public static final double CLIMB_DISTANCE_KD = 0.0;
-        
-        // TODO: Robotun tam tırmanma barının altına/önüne geldiğindeki ideal 'ty' değerini buradan ayarlayın
-        public static final double TARGET_TY_FOR_CLIMB = 0.0; 
     }
 
     // ──────────────────────────────────
